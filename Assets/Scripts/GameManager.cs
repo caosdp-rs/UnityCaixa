@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject hazardPrefeb;
     public int maxHazardToSpawn = 3;
-    public TMPro.TextMeshPro scoreText;
-
+    public TMPro.TextMeshProUGUI scoreText;
+    public Image backgroundMenu;
     private int score;
     private float timer;
     private static  bool gameOver;
@@ -19,6 +20,19 @@ public class GameManager : MonoBehaviour
     }
     public void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(Time.timeScale == 0)
+            {
+                StartCoroutine(ScaleTime(0, 1,0.5f));
+                backgroundMenu.gameObject.SetActive(false);
+            }
+            if (Time.timeScale == 1)
+            {
+                StartCoroutine(ScaleTime(1, 0, 0.5f));
+                backgroundMenu.gameObject.SetActive(true);
+            }
+        }
         if (gameOver)
             return;
         timer += Time.deltaTime;
@@ -53,5 +67,20 @@ public class GameManager : MonoBehaviour
     {
         gameOver = true;
     }
+    IEnumerator ScaleTime(float start, float end, float duration)
+    {
+        float lastTime = Time.realtimeSinceStartup;
+        float timer = 0.0f;
+        while (timer < duration)
+        {
+            Time.timeScale = Mathf.Lerp(start, end, timer / duration);
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
+            timer += (Time.realtimeSinceStartup - lastTime);
+            lastTime = Time.realtimeSinceStartup;
+            yield return null;
 
+        }
+        Time.timeScale = end;
+        Time.fixedDeltaTime = 0.02f * end;
+    }
 }

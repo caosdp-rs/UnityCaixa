@@ -11,7 +11,7 @@ public class Hazard : MonoBehaviour
     Vector3 rotation;
     private void Start()
     {
-        var xRotation = Random.Range(0.5f, 1);
+        var xRotation = Random.Range(90f, 180f);
         cinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
         rotation = new Vector3(-xRotation, 0);
         player = FindObjectOfType<Player>();
@@ -19,7 +19,7 @@ public class Hazard : MonoBehaviour
 
     private void Update()
     {
-        transform.Rotate(rotation);
+        transform.Rotate(rotation * Time.deltaTime);
     }
 
     private void OnCollisionEnter(Collision collision)
