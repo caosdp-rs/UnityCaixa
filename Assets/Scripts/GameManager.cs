@@ -7,14 +7,24 @@ public class GameManager : MonoBehaviour
 {
     public GameObject hazardPrefeb;
     public int maxHazardToSpawn = 3;
+
+    public  void Enable()
+    {
+        gameObject.SetActive(true);
+    }
+
     public TMPro.TextMeshProUGUI scoreText;
     public Image backgroundMenu;
     private int score;
     private float timer;
     private static  bool gameOver;
+
+    private static GameManager instance;
+    public static GameManager Instance => instance;
     // Start is called before the first frame update
     void Start()
     {
+        instance = this;
         StartCoroutine(SpawnHazards());
         //InvokeRepeating("SpawnHazards", 0, 1f);
     }

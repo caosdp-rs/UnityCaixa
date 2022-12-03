@@ -21,7 +21,13 @@ public class Player : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+        
     {
+        if (GameManager.Instance == null)
+        {
+            return;
+        }
+
         var horizontalInput = Input.GetAxis("Horizontal");
         if (rb.velocity.magnitude <= maxVelocity)
         {
