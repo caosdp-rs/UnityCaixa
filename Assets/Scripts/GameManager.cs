@@ -8,24 +8,40 @@ public class GameManager : MonoBehaviour
     public GameObject hazardPrefeb;
     public int maxHazardToSpawn = 3;
 
-    public  void Enable()
-    {
-        gameObject.SetActive(true);
-    }
+  
 
     public TMPro.TextMeshProUGUI scoreText;
     public Image backgroundMenu;
+    public GameObject mainVcam;
+    public GameObject zoomVcam;
+    public GameObject player;
+    public GameObject gameOverMenu;
     private int score;
     private float timer;
-    private static  bool gameOver;
+    private Coroutine hazardsCoroutine;
 
+    private bool gameOver;
+    private int highScore;
     private static GameManager instance;
     public static GameManager Instance => instance;
+    public int HighScore => highScore;
+    private void OnEnable()
+    {
+        gameOver = false;
+        score = 0;
+        scoreText.text = "0";
+        player.SetActive(true);
+        mainVcam.SetActive(true);
+        zoomVcam.SetActive(false);
+        //StartCoroutine(SpawnHazards());
+        hazardsCoroutine = StartCoroutine(SpawnHazards());
+    }
     // Start is called before the first frame update
+
     void Start()
     {
         instance = this;
-        StartCoroutine(SpawnHazards());
+        highScore = PlayerPrefs.GetInt("highScore");
         //InvokeRepeating("SpawnHazards", 0, 1f);
     }
     public void Update()
@@ -34,12 +50,14 @@ public class GameManager : MonoBehaviour
         {
             if(Time.timeScale == 0)
             {
-                StartCoroutine(ScaleTime(0, 1,0.5f));
+                LeanTween.value(0, 1, 0.75f).setOnUpdate(SetTimeScale).setIgnoreTimeScale(true) ;
+                //StartCoroutine(ScaleTime(0, 1,0.5f));
                 backgroundMenu.gameObject.SetActive(false);
             }
             if (Time.timeScale == 1)
             {
-                StartCoroutine(ScaleTime(1, 0, 0.5f));
+                LeanTween.value(1,0,0.75f).setOnUpdate(SetTimeScale).setIgnoreTimeScale(true);
+                //StartCoroutine(ScaleTime(1, 0, 0.5f));
                 backgroundMenu.gameObject.SetActive(true);
             }
         }
@@ -53,6 +71,13 @@ public class GameManager : MonoBehaviour
             score += 1;
         }
         
+    }
+
+    private void SetTimeScale(float obj)
+    {
+        Time.timeScale = obj;
+        Time.fixedDeltaTime = 0.02f * obj;
+
     }
 
     //private void SpawnHazards()
@@ -73,9 +98,25 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public static void GamerOver()
+    public void GameOver()
     {
         gameOver = true;
+        //teste para saber se o jogo não estava entrando em modo pause
+        if (Time.timeScale<1)
+        {
+            LeanTween.value(Time.time, 1, 0.75f).setOnUpdate(SetTimeScale).setIgnoreTimeScale(true);
+            backgroundMenu.gameObject.SetActive(false);
+        }
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("highScore", highScore);
+        }
+        StopCoroutine(hazardsCoroutine);
+        mainVcam.SetActive(false);
+        zoomVcam.SetActive(true);
+        gameObject.SetActive(false);
+        gameOverMenu.SetActive(true);
     }
     IEnumerator ScaleTime(float start, float end, float duration)
     {
@@ -90,7 +131,12 @@ public class GameManager : MonoBehaviour
             yield return null;
 
         }
-        Time.timeScale = end;
-        Time.fixedDeltaTime = 0.02f * end;
+
+    }  
+    
+    public  void Enable()
+    {
+
+        gameObject.SetActive(true);
     }
 }

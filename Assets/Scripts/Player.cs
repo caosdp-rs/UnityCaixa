@@ -10,13 +10,19 @@ public class Player : MonoBehaviour
     private Rigidbody rb;
     private CinemachineImpulseSource cinemachineImpulseSource;
     public ParticleSystem deathParticles;
-    public GameObject mainVcam;
-    public GameObject zoomVcam;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
         cinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
+    }
+
+    private void OnEnable()
+    {
+        transform.position = new Vector3(0, 1.97f, 0);
+        transform.rotation = Quaternion.identity;
+        rb.velocity = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -39,14 +45,23 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("hazard"))
         {
-            GameManager.GamerOver();
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            GameManager.Instance.GameOver();
+            gameObject.SetActive(false);
             Instantiate(deathParticles, transform.position, Quaternion.identity);
             cinemachineImpulseSource.GenerateImpulse();
-            mainVcam.SetActive(false);
-            zoomVcam.SetActive(true);
-            
+
+
 
         }
+    }
+    private void OnTriggerExit(Collider collider)
+    {
+        if (collider.CompareTag("FallDown"))
+        {
+            GameManager.Instance.GameOver();
+            gameObject.SetActive(false);
+        }
+
     }
 }
