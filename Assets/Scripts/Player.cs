@@ -33,8 +33,25 @@ public class Player : MonoBehaviour
         {
             return;
         }
+        float horizontalInput = 0;
 
-        var horizontalInput = Input.GetAxis("Horizontal");
+        if (Input.GetMouseButton(0))
+        {
+            var center = Screen.width / 2;
+            var mousePosition = Input.mousePosition;
+            if (mousePosition.x > center)
+            {
+                horizontalInput = 1;
+            }
+            else
+            {
+                horizontalInput = -1;
+            }
+        }
+        else
+        {
+            horizontalInput = Input.GetAxis("Horizontal");
+        }
         if (rb.velocity.magnitude <= maxVelocity)
         {
             rb.AddForce(new Vector3(horizontalInput * forceMultiple, 0, 0));
