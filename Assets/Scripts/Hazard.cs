@@ -26,7 +26,7 @@ public class Hazard : MonoBehaviour
     {
         if(!collision.gameObject.CompareTag("hazard"))
         {
-            Destroy(gameObject);
+            Destroy(gameObject,0.1f);
             Instantiate(breakingEffect, transform.position, Quaternion.identity);
             if (player !=null)
             {
@@ -35,7 +35,7 @@ public class Hazard : MonoBehaviour
                 //Debug.Log(force);
                 cinemachineImpulseSource.GenerateImpulse(force);
             }
-            
+
         }
     }
 
